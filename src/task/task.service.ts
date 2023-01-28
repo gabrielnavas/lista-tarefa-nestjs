@@ -29,7 +29,6 @@ export class TaskService {
         name: 'Make three cakes',
       },
     ];
-    console.log(this.taskData);
   }
 
   createTask(dto: CreateTaskDTO) {
@@ -45,8 +44,8 @@ export class TaskService {
     return task;
   }
 
-  getTaskById(taskId: string) {
-    const taskFound = this.taskData.find((task) => task.id === taskId);
+  getTaskByName(taskName: string) {
+    const taskFound = this.taskData.find((task) => task.name === taskName);
     if (!taskFound) {
       throw new TaskNotFoundException();
     }
@@ -58,15 +57,21 @@ export class TaskService {
   }
 
   updateTask(taskId: string, dto: UpdateTaskDTO) {
+    console.log(taskId, dto);
+    console.log(this.taskData);
+
     const taskIndex = this.taskData.findIndex((task) => task.id === taskId);
-    if (taskIndex < 0) {
+    if (taskIndex === -1) {
       throw new TaskNotFoundException();
     }
-    this.taskData[taskIndex] = {
-      ...this.taskData[taskIndex],
-      ...dto,
-    };
-    return dto;
+    if (
+      this.taskData[taskIndex].name === dto.name &&
+      this.taskData[taskIndex].id !== taskId
+    ) {
+      throw new TaskAlreadyExistsException('name');
+    }
+    this.taskData[taskIndex].name = dto.name;
+    this.taskData[taskIndex];
   }
 
   deleteTask(taskId: string) {

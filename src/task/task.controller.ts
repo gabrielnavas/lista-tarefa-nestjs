@@ -24,10 +24,11 @@ export class TaskController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  createTask(@Body() createTaskDTO: CreateTaskDTO) {
+  createTask(@Body() dto: CreateTaskDTO) {
     try {
-      return this.taskService.createTask(createTaskDTO);
+      return this.taskService.createTask(dto);
     } catch (err) {
+      console.log(err);
       if (err instanceof TaskAlreadyExistsException) {
         throw new BadRequestException(err.message);
       }
@@ -35,12 +36,13 @@ export class TaskController {
     }
   }
 
-  @Get(':id')
-  getTaskById(@Param('id', ParseUUIDPipe) taskId: string) {
+  @Get('name/:name')
+  getTaskByName(@Param('name') taskName: string) {
     try {
-      return this.taskService.getTaskById(taskId);
+      return this.taskService.getTaskByName(taskName);
     } catch (err) {
       if (err instanceof TaskNotFoundException) {
+        console.log(err);
         throw new BadRequestException(err.message);
       }
       throw new InternalServerErrorException('server error');
@@ -52,6 +54,7 @@ export class TaskController {
     try {
       return this.taskService.getAllTasks();
     } catch (err) {
+      console.log(err);
       throw new InternalServerErrorException('server error');
     }
   }
@@ -60,12 +63,13 @@ export class TaskController {
   @HttpCode(HttpStatus.NO_CONTENT)
   updateTask(
     @Param('id', ParseUUIDPipe) taskId: string,
-    @Body() updateTaskDTO: UpdateTaskDTO,
+    @Body() dto: UpdateTaskDTO,
   ) {
     try {
-      this.taskService.updateTask(taskId, updateTaskDTO);
+      this.taskService.updateTask(taskId, dto);
     } catch (err) {
       if (err instanceof TaskNotFoundException) {
+        console.log(err);
         throw new BadRequestException(err.message);
       }
       throw new InternalServerErrorException('server error');
@@ -79,6 +83,7 @@ export class TaskController {
       this.taskService.deleteTask(taskId);
     } catch (err) {
       if (err instanceof TaskNotFoundException) {
+        console.log(err);
         throw new BadRequestException(err.message);
       }
       throw new InternalServerErrorException('server error');
